@@ -1,0 +1,11 @@
+# virtualmachines:
+#   hosts:
+#     vm01:
+#       ansible_host: 
+#         18.130.240.133
+    # vm02:
+    #   ansible_host: 
+    #     35.176.89.62
+
+[groupName]
+18.130.240.133

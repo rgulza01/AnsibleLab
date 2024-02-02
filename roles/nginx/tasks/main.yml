@@ -1,0 +1,16 @@
+# roles/nginx/tasks/main.yml
+
+- name: Install nginx
+  apt:
+    name: nginx
+    state: present
+
+- name: Replace default HTML
+  copy:
+    src: files/index.nginx-debian.html  
+    dest: /var/www/html/index.nginx-debian.html
+
+- name: Restart nginx
+  service:
+    name: nginx
+    state: restarted

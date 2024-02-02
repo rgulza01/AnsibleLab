@@ -1,0 +1,8 @@
+#---------------------------------------------------
+
+- name: lab 5
+  hosts: groupName 
+  become: yes
+  roles:
+    - nginx
+    - jenkins

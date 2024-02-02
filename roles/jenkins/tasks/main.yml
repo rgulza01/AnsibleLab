@@ -1,0 +1,56 @@
+---
+# tasks file for jenkins
+
+# Jenkins
+
+- name: Ensure dependencies are installed.
+
+  package:
+
+    name: openjdk-11-jdk
+
+    state: present
+
+ 
+
+- name: Add Jenkins apt repository key.
+
+  apt_key:
+
+    url: https://pkg.jenkins.io/debian/jenkins.io-2023.key
+
+    state: present
+
+ 
+
+- name: Add Jenkins apt repository.
+
+  apt_repository:
+
+    repo: deb https://pkg.jenkins.io/debian binary/
+
+    state: present
+
+ 
+
+- name: Ensure Jenkins is installed.
+
+  apt:
+
+    name: jenkins
+
+    state: present
+
+    update_cache: true
+
+ 
+
+- name: Ensure Jenkins is running.
+
+  service:
+
+    name: jenkins
+
+    state: started
+
+    enabled: true
