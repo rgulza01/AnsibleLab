@@ -1,0 +1,102 @@
+- name: install stuff on vms
+  hosts: virtualmachines
+  tasks:
+    - name: install wget on both machines
+      become: yes
+      package: 
+        name: wget
+        state: present 
+    - name: install unzip on host-a
+      become: yes
+      package: 
+        name: unzip
+        state: present 
+      when: ansible_host == '18.130.240.133'
+      
+    - name: install nginx on host-b
+      become: yes
+      package: 
+        name: nginx
+        state: present 
+      when: ansible_host == '35.176.89.62'
+
+#---------------------------------------------------
+- name: further task on host-a 
+  hosts: vm01
+  become: yes
+  tasks: 
+    - name: install nginx
+      become: yes
+      apt:
+        name: nginx
+        state: present
+      register: nginx_install
+
+    - name: Replace default HTML
+      become: yes
+      copy:
+        src: /var/www/html/index.nginx-debian.html
+        dest: /var/www/html/index.nginx-debian.html
+
+    - name: print json object of installing nginx
+      debug:
+        var: nginx_install
+
+    - name: restart nginx
+      become: yes
+      service:
+        name: nginx
+        state: restarted
+    
+    - name: Install prerequisites for Docker repo
+      become: yes
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+        state: latest
+        update_cache: true
+
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+
+ 
+    - name: Add Docker APT repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+
+    - name: Install Docker CE
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+        update_cache: yes
+
+    - name: Install prerequisites for docker-compose
+      apt:
+        name:
+          - python3-pip
+          - python3-setuptools
+          - virtualenv
+
+    - name: Install docker-compose
+      pip:
+        name: docker-compose
+
+    - name: Ensure Docker is started
+      service:
+        name: docker
+        state: started
+
+#---------------------------------------------------
+
+- name: further task on host-b
+  hosts: vm02
+  tasks: 
+    - name: install docker
+      become: yes
+      shell: curl -sSL https://get.docker.com/ | sh
