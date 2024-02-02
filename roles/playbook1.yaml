@@ -1,8 +1,79 @@
 #---------------------------------------------------
 
-- name: lab 5
-  hosts: groupName 
-  become: yes
-  roles:
-    - nginx
-    - jenkins
+# - name: lab 5
+#   hosts: groupName 
+#   become: yes
+#   roles:
+#     - nginx
+#     - jenkins
+#     - load_balancer
+
+
+
+
+- name: My playbook
+  hosts: localhost
+  vars:
+    my_name: "chris"
+    repo_url: https://gitlab.com/Reece-Elder/devops-m5-rds.git
+    new_file: "/home/ubuntu/ansible/example.txt"
+    append_text: "This is an example"
+  vars_prompt:
+    - name: "package_name"
+      prompt: "Enter the package name to install"
+      default: "unzip"
+    - name: "append_text"
+      prompt: "Enter the text to append in the file"
+      private: no
+
+  # -----------tasks file for load_balancer-------
+  tasks:
+  - name: Print name
+    debug:
+      msg: "My name is {{ my_name }}"
+
+
+  - name: Clone repo
+    git:
+      repo: "{{ repo_url }}"
+      dest: "/home/ubuntu/ansible/repo"
+
+
+  - name: Install package
+    become: true
+    package:
+      name: "{{ package_name }}"
+      state: present
+
+
+  - name: Install nginx
+    become: true
+    package:
+      name: nginx
+      state: present
+    notify:
+      - restart nginx
+
+
+
+  - name: Create new file
+    file:
+      path: "{{ new_file }}"
+      state: touch
+
+
+
+  - name: Append text
+    lineinfile:
+      path: "{{ new_file }}"
+      line: "{{ append_text }}"
+      state: present
+      create: true
+
+  handlers:
+  - name: restart nginx
+    become: yes
+    service:
+      name: nginx
+      state: restarted
+ 

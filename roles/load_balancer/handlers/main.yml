@@ -1,0 +1,13 @@
+---
+# handlers file for load_balancer
+ handlers:
+
+    - name: restart nginx
+
+      become: yes
+
+      service:
+
+        name: nginx
+
+        state: restarted

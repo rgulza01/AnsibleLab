@@ -7,5 +7,11 @@
     #   ansible_host: 
     #     35.176.89.62
 
-[groupName]
-18.130.240.133
+# [groupName]
+# 18.130.240.133
+
+all:
+  hosts:
+    localhost:
+      ansible_user: ubuntu
+      ansible_connection: local
